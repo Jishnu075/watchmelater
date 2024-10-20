@@ -5,9 +5,8 @@ import 'package:watchmelater/domain/repositories/i_auth_repository.dart';
 class AuthRepository implements IAuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId:
-        '572746477251-jvt8gim8ar611lbvd0mikij6tl117m7e.apps.googleusercontent.com',
-  );
+      clientId:
+          '572746477251-jvt8gim8ar611lbvd0mikij6tl117m7e.apps.googleusercontent.com');
   @override
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
