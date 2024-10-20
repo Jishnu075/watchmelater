@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "572746477251",
+    "project_id": "watchmelater-28cf2",
+    "storage_bucket": "watchmelater-28cf2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572746477251:android:04a64224c6a9001b2dfc76",
+        "android_client_info": {
+          "package_name": "com.jishnu.watchmelater"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOkwMNgdHHJVUTAJ-byY4FiImtJK4AWDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
