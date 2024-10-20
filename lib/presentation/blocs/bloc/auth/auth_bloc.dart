@@ -21,11 +21,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<GoogleSignInRequested>((event, emit) async {
+      emit(
+          AuthLoading()); // Emit loading state before starting the sign-in process
       try {
         final userCredential = await AuthRepository().signInWithGoogle();
-        emit(Authenticated(userCredential.user!));
+        if (userCredential.user != null) {
+          emit(Authenticated(userCredential.user!));
+        } else {
+          emit(AuthError(
+              "Failed to retrieve user information after Google Sign-In"));
+        }
       } catch (e) {
-        emit(AuthError("An error occurred during Google Sign-In"));
+        emit(AuthError(
+            "An error occurred during Google Sign-In: ${e.toString()}"));
       }
     });
 

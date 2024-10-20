@@ -2,9 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watchmelater/data/models/movie_model.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_event.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_state.dart';
+import 'package:watchmelater/presentation/blocs/bloc/movie/movie_bloc.dart';
 import 'package:watchmelater/presentation/pages/login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -13,8 +15,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final height = MediaQuery.sizeOf(context).height;
     return Scaffold(
         appBar: AppBar(
           actions: [
@@ -26,8 +26,45 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: Icon(CupertinoIcons.add),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                String movieName = '';
+                return AlertDialog(
+                  title: const Text('Add Movie'),
+                  content: TextField(
+                    onChanged: (value) {
+                      movieName = value;
+                    },
+                    decoration:
+                        const InputDecoration(hintText: "Enter movie name"),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('Add'),
+                      onPressed: () {
+                        if (movieName.isNotEmpty) {
+                          context.read<MovieBloc>().add(AddMovie(Movie(
+                              name: movieName,
+                              isWatched: false,
+                              movieImage: 'testURL')));
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: const Icon(CupertinoIcons.add),
         ),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
@@ -43,17 +80,55 @@ class HomeScreen extends StatelessWidget {
               // Center(
               //   child: Text(user.displayName ?? "no name available"),
               // ),
-              Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.count(
-              crossAxisCount: 3,
-              childAspectRatio: 2 / 2.8,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              children: [
-                MovieTile(name: 'test name', ImageUrl: 'test url'),
-              ],
-            ),
+              BlocBuilder<MovieBloc, MovieState>(
+            builder: (context, state) {
+              if (state is MovieLoading) {
+                return const Center(
+                    child: CircularProgressIndicator.adaptive());
+              } else if (state is MoviesLoaded) {
+                return state.movies.isEmpty
+                    ? Center(child: Text('No movies found. Add some!'))
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<MovieBloc>().add(LoadMovies());
+                        },
+                        child: GridView.count(
+                          crossAxisCount: 3,
+                          childAspectRatio: 2 / 2.8,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          children: state.movies
+                              .map((movie) => MovieTile(
+                                    name: movie.name,
+                                    imageUrl: movie.movieImage,
+                                  ))
+                              .toList(),
+                        ),
+                      );
+              } else if (state is MoviesLoadError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(state.message),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () =>
+                            context.read<MovieBloc>().add(LoadMovies()),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (state is MovieAdded) {
+                // Trigger a reload of movies after successful addition
+                context.read<MovieBloc>().add(LoadMovies());
+                return const Center(
+                    child: CircularProgressIndicator.adaptive());
+              }
+              // Handle initial state
+              return const Center(child: Text('Start by adding some movies!'));
+            },
           ),
         ));
   }
@@ -63,10 +138,10 @@ class MovieTile extends StatelessWidget {
   const MovieTile({
     super.key,
     required this.name,
-    required this.ImageUrl,
+    required this.imageUrl,
   });
   final String name;
-  final String ImageUrl;
+  final String imageUrl;
   @override
   Widget build(BuildContext context) {
     return Container(
