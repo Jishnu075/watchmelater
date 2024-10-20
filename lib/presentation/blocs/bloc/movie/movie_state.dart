@@ -4,18 +4,21 @@ abstract class MovieState {}
 
 class MovieInitial extends MovieState {}
 
-class MoviesLoading extends MovieState {}
+class MovieLoading extends MovieState {}
 
-class MoviesLoaded extends MovieState {}
-
-class MoviesLoadError extends MovieState {
-  final String errorMsg;
-  MoviesLoadError(this.errorMsg);
+class MoviesLoaded extends MovieState {
+  final List<Movie> movies;
+  MoviesLoaded(this.movies);
 }
 
-class MovieAddedSuccess extends MovieState {}
+class MoviesLoadError extends MovieState {
+  final String message;
+  MoviesLoadError(this.message);
+}
+
+class MovieAdded extends MovieState {}
 
 class MovieAddedFailure extends MovieState {
-  final String errorMsg;
-  MovieAddedFailure(this.errorMsg);
+  final String message;
+  MovieAddedFailure(this.message);
 }
