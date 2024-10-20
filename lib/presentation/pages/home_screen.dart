@@ -88,21 +88,24 @@ class HomeScreen extends StatelessWidget {
               } else if (state is MoviesLoaded) {
                 return state.movies.isEmpty
                     ? Center(child: Text('No movies found. Add some!'))
-                    : RefreshIndicator(
+                    : RefreshIndicator.adaptive(
                         onRefresh: () async {
                           context.read<MovieBloc>().add(LoadMovies());
                         },
-                        child: GridView.count(
-                          crossAxisCount: 3,
-                          childAspectRatio: 2 / 2.8,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          children: state.movies
-                              .map((movie) => MovieTile(
-                                    name: movie.name,
-                                    imageUrl: movie.movieImage,
-                                  ))
-                              .toList(),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GridView.count(
+                            crossAxisCount: 3,
+                            childAspectRatio: 2 / 2.8,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            children: state.movies
+                                .map((movie) => MovieTile(
+                                      name: movie.name,
+                                      imageUrl: movie.movieImage,
+                                    ))
+                                .toList(),
+                          ),
                         ),
                       );
               } else if (state is MoviesLoadError) {
