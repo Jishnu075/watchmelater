@@ -60,6 +60,7 @@ class MovieRepository implements IMovieRepository {
               ? getMoviePosterUrl(posterPath: movie.posterPath!)
               : null,
           overview: movie.overview,
+          releaseDate: movie.releaseDate,
         );
       }).toList();
       return movies;

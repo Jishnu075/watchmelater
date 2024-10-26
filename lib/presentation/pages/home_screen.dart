@@ -146,13 +146,60 @@ class HomeScreen extends StatelessWidget {
                         child: ListView.separated(
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(state.movies[index].title),
-                              onTap: () {
-                                searchMovieTextEC.text =
-                                    state.movies[index].title;
-                                movieName = state.movies[index].title;
-                              },
+                            return
+                                // ListTile(
+                                //   title: Text(state.movies[index].title),
+                                //   onTap: () {
+                                //     searchMovieTextEC.text =
+                                //         state.movies[index].title;
+                                //     movieName = state.movies[index].title;
+                                //   },
+                                //   // leading: Text(state.movies[index].title),
+                                // );
+                                InkWell(
+                              child: Container(
+                                // color: Colors.amber,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.13,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.0855,
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image: state.movies[index]
+                                                            .posterPath !=
+                                                        null
+                                                    ? NetworkImage(
+                                                        state.movies[index]
+                                                            .posterPath!,
+                                                      )
+                                                    : const AssetImage(
+                                                        'assets/poster-not-available.jpg')))),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(state.movies[index].title,
+                                            style:
+                                                const TextStyle(fontSize: 12)),
+                                        Text(
+                                            getYearOfRelease(state.movies[index]
+                                                    .releaseDate ??
+                                                ''),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                            )),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             );
                           },
                           separatorBuilder: (context, index) =>
@@ -196,6 +243,10 @@ class HomeScreen extends StatelessWidget {
     searchMovieTextEC.clear();
     context.read<SearchBloc>().add(ResetMovieBlocState());
     Navigator.of(context).pop();
+  }
+
+  String getYearOfRelease(String releaseDate) {
+    return releaseDate.split('-')[0];
   }
 
   String _searchQuery = '';

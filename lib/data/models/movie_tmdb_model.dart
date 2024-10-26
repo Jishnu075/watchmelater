@@ -3,12 +3,14 @@ class MovieTMDB {
   final String title;
   final String? posterPath;
   final String? overview;
+  final String? releaseDate;
 
   MovieTMDB({
     required this.id,
     required this.title,
     this.posterPath,
     this.overview,
+    this.releaseDate,
   });
 
   factory MovieTMDB.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class MovieTMDB {
       title: json['title'],
       posterPath: json['poster_path'],
       overview: json['overview'],
+      releaseDate: json['release_date'],
     );
   }
 }
