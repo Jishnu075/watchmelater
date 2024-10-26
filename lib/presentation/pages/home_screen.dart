@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,133 +9,207 @@ import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_event.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_state.dart';
 import 'package:watchmelater/presentation/blocs/bloc/movie/movie_bloc.dart';
+import 'package:watchmelater/presentation/blocs/bloc/search/search_bloc.dart';
 import 'package:watchmelater/presentation/pages/login_screen.dart';
+import 'package:watchmelater/data/repositories/movie_repository.dart';
 
 class HomeScreen extends StatelessWidget {
   final User user;
-  const HomeScreen({super.key, required this.user});
+  HomeScreen({super.key, required this.user});
+
+  final TextEditingController searchMovieTextEC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          actions: [
-            IconButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(SignOutRequested());
-                },
-                icon: const Icon(Icons.logout)),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                String movieName = '';
-                return AlertDialog(
-                  title: const Text('Add Movie'),
-                  content: TextField(
-                    onChanged: (value) {
-                      movieName = value;
-                    },
-                    decoration:
-                        const InputDecoration(hintText: "Enter movie name"),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: const Text('Cancel'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(SignOutRequested());
+              },
+              icon: const Icon(Icons.logout)),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddMovieDialog(context: context);
+        },
+        child: const Icon(CupertinoIcons.add),
+      ),
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is UnAuthenticated) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()));
+          } else if (state is AuthError) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        },
+        child:
+            // Center(
+            //   child: Text(user.displayName ?? "no name available"),
+            // ),
+            BlocBuilder<MovieBloc, MovieState>(
+          builder: (context, state) {
+            if (state is MovieLoading) {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            } else if (state is MoviesLoaded) {
+              return state.movies.isEmpty
+                  ? Center(child: Text('No movies found. Add some!'))
+                  : RefreshIndicator.adaptive(
+                      onRefresh: () async {
+                        context.read<MovieBloc>().add(LoadMoviesFromFirebase());
                       },
-                    ),
-                    TextButton(
-                      child: const Text('Add'),
-                      onPressed: () {
-                        if (movieName.isNotEmpty) {
-                          context.read<MovieBloc>().add(AddMovie(Movie(
-                              name: movieName,
-                              isWatched: false,
-                              movieImage: 'testURL')));
-                          Navigator.of(context).pop();
-                        }
-                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GridView.count(
+                          crossAxisCount: 3,
+                          childAspectRatio: 2 / 2.8,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          children: state.movies
+                              .map((movie) => MovieTile(
+                                    name: movie.name,
+                                    imageUrl: movie.movieImage,
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                    );
+            } else if (state is MoviesLoadError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(state.message),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context
+                          .read<MovieBloc>()
+                          .add(LoadMoviesFromFirebase()),
+                      child: const Text('Retry'),
                     ),
                   ],
-                );
-              },
-            );
-          },
-          child: const Icon(CupertinoIcons.add),
-        ),
-        body: BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is UnAuthenticated) {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()));
-            } else if (state is AuthError) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.message)));
+                ),
+              );
+            } else if (state is MovieAdded) {
+              // Trigger a reload of movies after successful addition
+              context.read<MovieBloc>().add(LoadMoviesFromFirebase());
+              return const Center(child: CircularProgressIndicator.adaptive());
             }
+            // Handle initial state
+            return const Center(child: Text('Start by adding some movies!'));
           },
-          child:
-              // Center(
-              //   child: Text(user.displayName ?? "no name available"),
-              // ),
-              BlocBuilder<MovieBloc, MovieState>(
-            builder: (context, state) {
-              if (state is MovieLoading) {
-                return const Center(
-                    child: CircularProgressIndicator.adaptive());
-              } else if (state is MoviesLoaded) {
-                return state.movies.isEmpty
-                    ? Center(child: Text('No movies found. Add some!'))
-                    : RefreshIndicator.adaptive(
-                        onRefresh: () async {
-                          context.read<MovieBloc>().add(LoadMovies());
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: GridView.count(
-                            crossAxisCount: 3,
-                            childAspectRatio: 2 / 2.8,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            children: state.movies
-                                .map((movie) => MovieTile(
-                                      name: movie.name,
-                                      imageUrl: movie.movieImage,
-                                    ))
-                                .toList(),
-                          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAddMovieDialog({required BuildContext context}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String movieName = '';
+        return AlertDialog(
+          title: const Text('Add Movie'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: searchMovieTextEC,
+                onChanged: (value) {
+                  _onSearchChanged(context, value);
+                  movieName = value;
+                },
+                decoration: InputDecoration(
+                  hintText: "Enter movie name",
+                  suffixIcon: BlocBuilder<SearchBloc, SearchState>(
+                    builder: (context, state) {
+                      if (state is SearchingMovieLoading) {
+                        return const CircularProgressIndicator.adaptive();
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
+                ),
+              ),
+              BlocBuilder<SearchBloc, SearchState>(
+                builder: (context, state) {
+                  if (state is SearchingMovieCompleted) {
+                    if (state.movies.isNotEmpty) {
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.20,
+                        width: MediaQuery.of(context).size.width * 0.70,
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(state.movies[index].title),
+                              onTap: () {
+                                searchMovieTextEC.text =
+                                    state.movies[index].title;
+                                movieName = state.movies[index].title;
+                              },
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 8),
+                          itemCount: state.movies.length,
                         ),
                       );
-              } else if (state is MoviesLoadError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(state.message),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () =>
-                            context.read<MovieBloc>().add(LoadMovies()),
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                );
-              } else if (state is MovieAdded) {
-                // Trigger a reload of movies after successful addition
-                context.read<MovieBloc>().add(LoadMovies());
-                return const Center(
-                    child: CircularProgressIndicator.adaptive());
-              }
-              // Handle initial state
-              return const Center(child: Text('Start by adding some movies!'));
-            },
+                    }
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
           ),
-        ));
+          actions: <Widget>[
+            TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  _resetMovieDialogState(context);
+                }),
+            TextButton(
+              child: const Text('Add'),
+              onPressed: () {
+                if (movieName.isNotEmpty) {
+                  context.read<MovieBloc>().add(AddMovie(MovieStorage(
+                        name: movieName,
+                        isWatched: false,
+                        movieImage: 'testURL',
+                      )));
+                  _resetMovieDialogState(context);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _resetMovieDialogState(BuildContext context) {
+    searchMovieTextEC.clear();
+    context.read<SearchBloc>().add(ResetMovieBlocState());
+    Navigator.of(context).pop();
+  }
+
+  String _searchQuery = '';
+  Timer? _debounce;
+
+  void _onSearchChanged(BuildContext context, String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _searchQuery = query;
+      // Use SearchBloc instead of MovieBloc
+      context
+          .read<SearchBloc>()
+          .add(SearchMovieOnTMDB(movieName: _searchQuery));
+    });
   }
 }
 

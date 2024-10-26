@@ -2,10 +2,10 @@ part of 'movie_bloc.dart';
 
 abstract class MovieEvent {}
 
-class LoadMovies extends MovieEvent {}
+class LoadMoviesFromFirebase extends MovieEvent {}
 
 class AddMovie extends MovieEvent {
-  final Movie movie;
+  final MovieStorage movie;
 
   AddMovie(this.movie);
 

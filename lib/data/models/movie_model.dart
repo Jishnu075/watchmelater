@@ -1,9 +1,9 @@
-class Movie {
+class MovieStorage {
   String name;
   bool isWatched;
   String movieImage;
 
-  Movie({
+  MovieStorage({
     required this.name,
     required this.isWatched,
     required this.movieImage,
@@ -19,8 +19,8 @@ class Movie {
   }
 
   // Create a Movie object from a Firestore document
-  factory Movie.fromMap(Map<String, dynamic> map) {
-    return Movie(
+  factory MovieStorage.fromMap(Map<String, dynamic> map) {
+    return MovieStorage(
       name: map['name'],
       isWatched: map['isWatched'],
       movieImage: map['movieImage'],
