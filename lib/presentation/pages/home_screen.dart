@@ -271,13 +271,11 @@ class MovieCard extends StatelessWidget {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(8.0),
                     child: imageUrl != null
-                        ? Image.network(
-                            imageUrl!,
+                        ? Image.network(imageUrl!,
                             errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                  'assets/poster-not-available.jpg');
-                            },
-                          )
+                            return Image.asset(
+                                'assets/poster-not-available.jpg');
+                          })
                         : Image.asset('assets/poster-not-available.jpg'))),
             Text(
               name,
