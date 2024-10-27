@@ -47,3 +47,38 @@ app.*.map.json
 
 # Monarch related
 .monarch/
+
+# Android specific
+**/android/**/google-services.json
+**/android/key.properties
+**/android/**/*.keystore
+**/android/**/*.jks
+**/android/app/debug.keystore
+**/android/app/release.keystore
+
+# iOS specific
+**/ios/Runner/GoogleService-Info.plist
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/.last_build_id
+**/ios/*.mode1v3
+**/ios/*.mode2v3
+**/ios/*.moved-aside
+**/ios/*.pbxuser
+**/ios/*.perspectivev3
+**/ios/**/*sync/
+**/ios/.sconsign.dblite
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/**/xcuserdata/
+**/ios/Podfile.lock
+**/ios/Runner.xcworkspace/xcshareddata/
+**/ios/*.xcworkspace/xcuserdata/
+**/ios/Runner.xcodeproj/xcuserdata/
+
+# Certificates & provisioning profiles
+**/ios/*.cer
+**/ios/*.certSigningRequest
+**/ios/*.p12
+**/ios/*.mobileprovision
+**/ios/*.provisionprofile
+**/ios/build/
+**/ios/.generated/
