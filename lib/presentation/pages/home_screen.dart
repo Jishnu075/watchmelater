@@ -279,7 +279,10 @@ class MovieCard extends StatelessWidget {
                             },
                           )
                         : Image.asset('assets/poster-not-available.jpg'))),
-            Text(name),
+            Text(
+              name,
+              textAlign: TextAlign.center,
+            ),
           ],
         ));
   }
