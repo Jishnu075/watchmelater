@@ -132,6 +132,10 @@ class HomeScreen extends StatelessWidget {
                 },
                 decoration: InputDecoration(
                   hintText: "Enter movie name",
+                  // focusedBorder:
+                  //     OutlineInputBorder(borderSide: BorderSide(width: 0.1)),
+                  border:
+                      OutlineInputBorder(borderSide: BorderSide(width: 0.1)),
                   suffixIcon: BlocBuilder<SearchBloc, SearchState>(
                     builder: (context, state) {
                       if (state is SearchingMovieLoading) {
@@ -147,52 +151,44 @@ class HomeScreen extends StatelessWidget {
                 builder: (context, state) {
                   if (state is SearchingMovieCompleted) {
                     if (state.movies.isNotEmpty) {
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 0.20,
-                        width: MediaQuery.of(context).size.width * 0.70,
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return
-                                // ListTile(
-                                //   title: Text(state.movies[index].title),
-                                //   onTap: () {
-                                //     searchMovieTextEC.text =
-                                //         state.movies[index].title;
-                                //     movieName = state.movies[index].title;
-                                //   },
-                                //   // leading: Text(state.movies[index].title),
-                                // );
-                                InkWell(
-                                    onTap: () {
-                                      if (searchMovieTextEC.text.isNotEmpty) {
-                                        if (movieName.isNotEmpty) {
-                                          context
-                                              .read<MovieBloc>()
-                                              .add(AddMovie(MovieStorage(
-                                                name: state.movies[index].title,
-                                                isWatched: false,
-                                                movieImage: state
-                                                    .movies[index].posterPath!,
-                                                releaseDate: state
-                                                    .movies[index].releaseDate!,
-                                              )));
-                                          _resetMovieDialogState(context);
-                                        }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.20,
+                          width: MediaQuery.of(context).size.width * 0.70,
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                  onTap: () {
+                                    if (searchMovieTextEC.text.isNotEmpty) {
+                                      if (movieName.isNotEmpty) {
+                                        context
+                                            .read<MovieBloc>()
+                                            .add(AddMovie(MovieStorage(
+                                              name: state.movies[index].title,
+                                              isWatched: false,
+                                              movieImage: state
+                                                  .movies[index].posterPath!,
+                                              releaseDate: state
+                                                  .movies[index].releaseDate!,
+                                            )));
+                                        _resetMovieDialogState(context);
                                       }
-                                    },
-                                    child: TMDBMovieTile(
-                                      movieTitle: state.movies[index].title,
-                                      movieThumbnailURL:
-                                          state.movies[index].posterPath,
-                                      yearOfRelease: getYearOfRelease(
-                                          state.movies[index].releaseDate ??
-                                              ''),
-                                    ));
-                          },
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 8),
-                          itemCount: state.movies.length,
+                                    }
+                                  },
+                                  child: TMDBMovieTile(
+                                    movieTitle: state.movies[index].title,
+                                    movieThumbnailURL:
+                                        state.movies[index].posterPath,
+                                    yearOfRelease: getYearOfRelease(
+                                        state.movies[index].releaseDate ?? ''),
+                                  ));
+                            },
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
+                            itemCount: state.movies.length,
+                          ),
                         ),
                       );
                     }
@@ -305,7 +301,7 @@ class TMDBMovieTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 247, 237, 255),
+          color: Color.fromARGB(203, 246, 236, 255),
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(10), bottomRight: Radius.circular(10))),
       width: MediaQuery.sizeOf(context).width * 0.75,
