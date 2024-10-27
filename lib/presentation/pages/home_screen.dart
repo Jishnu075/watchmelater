@@ -303,28 +303,64 @@ class TMDBMovieTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-            width: MediaQuery.of(context).size.width * 0.13,
-            height: MediaQuery.of(context).size.height * 0.0855,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: movieThumbnailURL != null
-                        ? NetworkImage(
-                            movieThumbnailURL!,
-                          )
-                        : const AssetImage(
-                            'assets/poster-not-available.jpg')))),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(movieTitle, style: const TextStyle(fontSize: 12)),
-            Text(yearOfRelease, style: const TextStyle(fontSize: 12)),
-          ],
-        ),
-      ],
+    return Container(
+      decoration: const BoxDecoration(
+          color: Color.fromARGB(255, 247, 237, 255),
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(10), bottomRight: Radius.circular(10))),
+      width: MediaQuery.sizeOf(context).width * 0.75,
+      height: MediaQuery.sizeOf(context).height * 0.0855,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.13,
+                  height: MediaQuery.of(context).size.height * 0.0855,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: movieThumbnailURL != null
+                              ? NetworkImage(
+                                  movieThumbnailURL!,
+                                )
+                              : const AssetImage(
+                                  'assets/poster-not-available.jpg')))),
+            ),
+          ),
+          Flexible(
+            flex: 8,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    movieTitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                  ),
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.calendar, size: 14),
+                      const SizedBox(width: 5),
+                      Text(yearOfRelease, style: const TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
