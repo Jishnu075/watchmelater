@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watchmelater/data/models/movie_model.dart';
@@ -23,12 +24,18 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
+        title: Text("WatchMeLater"),
         actions: [
-          IconButton(
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton(
               onPressed: () {
                 context.read<AuthBloc>().add(SignOutRequested());
               },
-              icon: const Icon(Icons.logout)),
+              child: const Text('logout'),
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -65,17 +72,17 @@ class HomeScreen extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GridView.count(
-                          crossAxisCount: 3,
-                          childAspectRatio: 2 / 2.8,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          children: state.movies
-                              .map((movie) => MovieTile(
-                                    name: movie.name,
-                                    imageUrl: movie.movieImage,
-                                  ))
-                              .toList(),
-                        ),
+                            dragStartBehavior: DragStartBehavior.start,
+                            crossAxisCount: 3,
+                            childAspectRatio: 2 / 2.8,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            children: state.movies.reversed
+                                .map((movie) => MovieCard(
+                                      name: movie.name,
+                                      imageUrl: movie.movieImage ?? "",
+                                    ))
+                                .toList()),
                       ),
                     );
             } else if (state is MoviesLoadError) {
@@ -157,50 +164,31 @@ class HomeScreen extends StatelessWidget {
                                 //   // leading: Text(state.movies[index].title),
                                 // );
                                 InkWell(
-                              child: Container(
-                                // color: Colors.amber,
-                                child: Row(
-                                  children: [
-                                    Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.13,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.0855,
-                                        decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                                image: state.movies[index]
-                                                            .posterPath !=
-                                                        null
-                                                    ? NetworkImage(
-                                                        state.movies[index]
-                                                            .posterPath!,
-                                                      )
-                                                    : const AssetImage(
-                                                        'assets/poster-not-available.jpg')))),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(state.movies[index].title,
-                                            style:
-                                                const TextStyle(fontSize: 12)),
-                                        Text(
-                                            getYearOfRelease(state.movies[index]
-                                                    .releaseDate ??
-                                                ''),
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                            )),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
+                                    onTap: () {
+                                      if (searchMovieTextEC.text.isNotEmpty) {
+                                        if (movieName.isNotEmpty) {
+                                          context
+                                              .read<MovieBloc>()
+                                              .add(AddMovie(MovieStorage(
+                                                name: state.movies[index].title,
+                                                isWatched: false,
+                                                movieImage: state
+                                                    .movies[index].posterPath!,
+                                                releaseDate: state
+                                                    .movies[index].releaseDate!,
+                                              )));
+                                          _resetMovieDialogState(context);
+                                        }
+                                      }
+                                    },
+                                    child: TMDBMovieTile(
+                                      movieTitle: state.movies[index].title,
+                                      movieThumbnailURL:
+                                          state.movies[index].posterPath,
+                                      yearOfRelease: getYearOfRelease(
+                                          state.movies[index].releaseDate ??
+                                              ''),
+                                    ));
                           },
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 8),
@@ -227,7 +215,8 @@ class HomeScreen extends StatelessWidget {
                   context.read<MovieBloc>().add(AddMovie(MovieStorage(
                         name: movieName,
                         isWatched: false,
-                        movieImage: 'testURL',
+                        movieImage: null,
+                        releaseDate: null,
                       )));
                   _resetMovieDialogState(context);
                 }
@@ -254,7 +243,7 @@ class HomeScreen extends StatelessWidget {
 
   void _onSearchChanged(BuildContext context, String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
+    _debounce = Timer(const Duration(milliseconds: 600), () {
       _searchQuery = query;
       // Use SearchBloc instead of MovieBloc
       context
@@ -264,27 +253,78 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class MovieTile extends StatelessWidget {
-  const MovieTile({
+//TODO rftr
+class MovieCard extends StatelessWidget {
+  const MovieCard({
     super.key,
     required this.name,
     required this.imageUrl,
   });
   final String name;
-  final String imageUrl;
+  final String? imageUrl;
   @override
   Widget build(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.amber,
-        ),
+            // borderRadius: BorderRadius.circular(20),
+            ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(),
+            Expanded(
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: imageUrl != null
+                        ? Image.network(
+                            imageUrl!,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                  'assets/poster-not-available.jpg');
+                            },
+                          )
+                        : Image.asset('assets/poster-not-available.jpg'))),
             Text(name),
           ],
         ));
+  }
+}
+
+//TODO rftr
+class TMDBMovieTile extends StatelessWidget {
+  const TMDBMovieTile(
+      {super.key,
+      required this.movieThumbnailURL,
+      required this.movieTitle,
+      required this.yearOfRelease});
+
+  final String? movieThumbnailURL;
+  final String movieTitle;
+  final String yearOfRelease;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+            width: MediaQuery.of(context).size.width * 0.13,
+            height: MediaQuery.of(context).size.height * 0.0855,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: movieThumbnailURL != null
+                        ? NetworkImage(
+                            movieThumbnailURL!,
+                          )
+                        : const AssetImage(
+                            'assets/poster-not-available.jpg')))),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(movieTitle, style: const TextStyle(fontSize: 12)),
+            Text(yearOfRelease, style: const TextStyle(fontSize: 12)),
+          ],
+        ),
+      ],
+    );
   }
 }

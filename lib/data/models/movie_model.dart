@@ -1,12 +1,13 @@
 class MovieStorage {
   String name;
   bool isWatched;
-  String movieImage;
-
+  String? movieImage;
+  String? releaseDate;
   MovieStorage({
     required this.name,
     required this.isWatched,
     required this.movieImage,
+    required this.releaseDate,
   });
 
   // Convert a Movie object into a map for Firestore
@@ -15,6 +16,7 @@ class MovieStorage {
       'name': name,
       'isWatched': isWatched,
       'movieImage': movieImage,
+      'releaseDate': releaseDate,
     };
   }
 
@@ -24,6 +26,7 @@ class MovieStorage {
       name: map['name'],
       isWatched: map['isWatched'],
       movieImage: map['movieImage'],
+      releaseDate: map['releaseDate'],
     );
   }
 }
