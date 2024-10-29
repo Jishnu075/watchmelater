@@ -260,29 +260,29 @@ class MovieCard extends StatelessWidget {
   final String? imageUrl;
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            // borderRadius: BorderRadius.circular(20),
-            ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: imageUrl != null
-                        ? Image.network(imageUrl!,
-                            errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                                'assets/poster-not-available.jpg');
-                          })
-                        : Image.asset('assets/poster-not-available.jpg'))),
-            Text(
-              name,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: imageUrl != null
+                    ? Image.network(imageUrl!,
+                        errorBuilder: (context, error, stackTrace) {
+                        return Image.asset('assets/poster-not-available.jpg');
+                      })
+                    : Image.asset('assets/poster-not-available.jpg'))),
+        SizedBox(
+          width: MediaQuery.sizeOf(context).width * 0.26,
+          child: Text(
+            name,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
   }
 }
 
