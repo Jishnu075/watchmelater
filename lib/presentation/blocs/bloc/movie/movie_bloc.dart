@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:watchmelater/data/models/movie_model.dart';
-import 'package:watchmelater/data/models/movie_tmdb_model.dart';
 import 'package:watchmelater/data/repositories/movie_repository.dart';
 
 part 'movie_event.dart';

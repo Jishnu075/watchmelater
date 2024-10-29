@@ -12,7 +12,6 @@ import 'package:watchmelater/presentation/blocs/bloc/auth/auth_state.dart';
 import 'package:watchmelater/presentation/blocs/bloc/movie/movie_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/search/search_bloc.dart';
 import 'package:watchmelater/presentation/pages/login_screen.dart';
-import 'package:watchmelater/data/repositories/movie_repository.dart';
 
 class HomeScreen extends StatelessWidget {
   final User user;
