@@ -1,0 +1,38 @@
+name: Flutter CI
+
+on:
+    push:
+        branches: [test]
+    pull_request: 
+        branches: [test]
+
+jobs:
+    build: 
+        runs-on: macos-latest
+
+        steps:
+            - uses: actions/checkout@v2
+      
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                flutter-version: '3.24.3'
+      
+            - name: Install dependencies
+              run: flutter pub get
+      
+            - name: Run tests
+              run: flutter test
+      
+            - name: Build APK
+              run: flutter build apk
+              
+            - name: Upload APK to GitHub Release
+              uses: ncipollo/release-action@v1
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                artifacts: build/app/outputs/flutter-apk/app-release.apk
+                tag: v1.0.0  # You can update this dynamically if needed
+                name: "Release v1.0.0"
+                body: "Automated release of APK"
+      
