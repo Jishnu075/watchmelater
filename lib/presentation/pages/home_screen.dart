@@ -248,6 +248,8 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+enum LongPressMenuItemValue { edit, remove }
+
 //TODO rftr
 class MovieCard extends StatelessWidget {
   const MovieCard({
@@ -259,28 +261,97 @@ class MovieCard extends StatelessWidget {
   final String? imageUrl;
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: imageUrl != null
-                    ? Image.network(imageUrl!,
-                        errorBuilder: (context, error, stackTrace) {
-                        return Image.asset('assets/poster-not-available.jpg');
-                      })
-                    : Image.asset('assets/poster-not-available.jpg'))),
-        SizedBox(
-          width: MediaQuery.sizeOf(context).width * 0.26,
-          child: Text(
-            name,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        showCupertinoModalPopup(
+            context: context,
+            builder: (context) {
+              //TODO add movie detail
+              //rating, desc, title, sa
+              return Container(
+                height: 300,
+                color: Colors.green,
+              );
+            });
+      },
+      onLongPressStart: (details) {
+        //TODO: enable small haptic on longpress
+        final RenderBox overlay =
+            Overlay.of(context).context.findRenderObject() as RenderBox;
+        final RelativeRect position = RelativeRect.fromRect(
+          Rect.fromPoints(
+            details.globalPosition,
+            details.globalPosition,
           ),
-        ),
-      ],
+          Offset.zero & overlay.size,
+        );
+        showMenu(context: context, position: position, items: [
+          const PopupMenuItem(
+            value: LongPressMenuItemValue.edit,
+            child: ListTile(
+                title: Text("edit"), leading: Icon(Icons.edit_outlined)),
+          ),
+          const PopupMenuItem(
+            value: LongPressMenuItemValue.remove,
+            child: ListTile(
+                title: Text("remove"),
+                leading: Icon(Icons.delete_forever_outlined)),
+          ),
+        ]).then((value) {
+          if (value == LongPressMenuItemValue.edit) {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return Material(child: TextField());
+                });
+          } else if (value == LongPressMenuItemValue.remove) {
+            //TODO fix async gap
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text("Are you sure?"),
+                actions: [
+                  TextButton(
+                      child: Text('cancel'),
+                      onPressed: () => Navigator.pop(context)),
+                  TextButton(
+                      child: Text('remove'),
+                      onPressed: () {
+                        //call firebase call to delete
+                        // while delete process show progress if needed
+                        // if firebase deletion success, delete the movie from the list as well.
+
+                        //TODO: add removal sound effect later
+                      }),
+                ],
+              ),
+            );
+          }
+        });
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: imageUrl != null
+                      ? Image.network(imageUrl!,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Image.asset('assets/poster-not-available.jpg');
+                        })
+                      : Image.asset('assets/poster-not-available.jpg'))),
+          SizedBox(
+            width: MediaQuery.sizeOf(context).width * 0.26,
+            child: Text(
+              name,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
