@@ -9,4 +9,7 @@ abstract class IMovieRepository {
   String getMoviePosterUrl({required String posterPath});
 
   Future searchMoviesFromTMDB({required String movieName});
+
+  Future<void> updateMovieStatus(
+      {required String movieId, required bool watched});
 }

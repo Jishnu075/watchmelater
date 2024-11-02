@@ -35,8 +35,7 @@ class WatchedScreen extends StatelessWidget {
                             .reversed
                             .map((movie) {
                           return MovieCard(
-                            name: movie.name,
-                            imageUrl: movie.movieImage ?? "",
+                            movie: movie,
                           );
                         }).toList(),
                       ),

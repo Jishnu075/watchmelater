@@ -68,4 +68,11 @@ class MovieRepository implements IMovieRepository {
       return [];
     }
   }
+
+  @override
+  Future<void> updateMovieStatus(
+      {required String movieId, required bool watched}) {
+    // TODO: implement updateMovieStatus
+    throw UnimplementedError();
+  }
 }

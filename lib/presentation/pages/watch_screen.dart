@@ -74,8 +74,7 @@ class WatchScreen extends StatelessWidget {
                                 .reversed
                                 .map((movie) {
                               return MovieCard(
-                                name: movie.name,
-                                imageUrl: movie.movieImage ?? "",
+                                movie: movie,
                               );
                             }).toList()),
                       ),
@@ -250,18 +249,19 @@ class WatchScreen extends StatelessWidget {
   }
 }
 
-enum LongPressMenuItemValue { edit, remove }
+enum LongPressMenuItemValue { markAsWatched, moveToWatchlist, remove }
 
 //TODO rftr
 class MovieCard extends StatelessWidget {
-  MovieCard({
-    super.key,
-    required this.name,
-    required this.imageUrl,
-  });
+  MovieCard(
+      {super.key,
+      // required this.name,
+      // required this.imageUrl,
+      required this.movie});
 
-  final String name;
-  final String? imageUrl;
+  // final String name;
+  // final String? imageUrl;
+  final MovieStorage movie;
   final TextEditingController editMovieNameEC = TextEditingController();
 
   @override
@@ -292,10 +292,16 @@ class MovieCard extends StatelessWidget {
         );
         showMenu(context: context, position: position, items: [
           PopupMenuItem(
-              value: LongPressMenuItemValue.edit,
+              value: movie.isWatched
+                  ? LongPressMenuItemValue.moveToWatchlist
+                  : LongPressMenuItemValue.markAsWatched,
               child: ListTile(
-                  title: Text("Mark as watched"),
-                  leading: Icon(Icons.star_border))),
+                  title: movie.isWatched
+                      ? Text("move to watchlist")
+                      : Text('mark as watched'),
+                  leading: movie.isWatched
+                      ? Icon(Icons.keyboard_arrow_left)
+                      : Icon(Icons.star_border))),
           const PopupMenuItem(
             value: LongPressMenuItemValue.remove,
             child: ListTile(
@@ -303,19 +309,22 @@ class MovieCard extends StatelessWidget {
                 leading: Icon(Icons.delete_forever_outlined)),
           ),
         ]).then((value) {
-          if (value == LongPressMenuItemValue.edit) {
-            editMovieNameEC.text = name;
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(title: Text("Edit"), actions: [
-                    TextField(
-                      controller: editMovieNameEC,
-                    ),
-                    TextButton(onPressed: () {}, child: const Text('save'))
-                  ]);
-                });
-          } else if (value == LongPressMenuItemValue.remove) {
+          if (value == LongPressMenuItemValue.moveToWatchlist) {
+            context.read<MovieBloc>().add()
+          }
+          // TODO : maybe edit stuff can be implemented later?
+          // editMovieNameEC.text = movie.name;
+          // showDialog(
+          //     context: context,
+          //     builder: (context) {
+          //       return AlertDialog(title: Text("Edit"), actions: [
+          //         TextField(
+          //           controller: editMovieNameEC,
+          //         ),
+          //         TextButton(onPressed: () {}, child: const Text('save'))
+          //       ]);
+          //     });
+          else if (value == LongPressMenuItemValue.remove) {
             //TODO fix async gap
             showDialog(
               context: context,
@@ -346,8 +355,8 @@ class MovieCard extends StatelessWidget {
           Expanded(
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
-                  child: imageUrl != null
-                      ? Image.network(imageUrl!,
+                  child: movie.movieImage != null
+                      ? Image.network(movie.movieImage!,
                           errorBuilder: (context, error, stackTrace) {
                           return Image.asset('assets/poster-not-available.jpg');
                         })
@@ -355,7 +364,7 @@ class MovieCard extends StatelessWidget {
           SizedBox(
             width: MediaQuery.sizeOf(context).width * 0.26,
             child: Text(
-              name,
+              movie.name,
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -439,6 +448,46 @@ class TMDBMovieTile extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class MovieStorage {
+  final String movieId; // Unique identifier for the movie
+  final String title;
+  final String posterPath;
+  final String overview;
+  final String releaseDate;
+  final bool isWatched; // Add this line
+
+  MovieStorage({
+    required this.movieId,
+    required this.title,
+    required this.posterPath,
+    required this.overview,
+    required this.releaseDate,
+    this.isWatched = false, // Default value is false
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'movieId': movieId,
+      'title': title,
+      'posterPath': posterPath,
+      'overview': overview,
+      'releaseDate': releaseDate,
+      'isWatched': isWatched, // Add this line
+    };
+  }
+
+  factory MovieStorage.fromMap(Map<String, dynamic> map) {
+    return MovieStorage(
+      movieId: map['movieId'],
+      title: map['title'],
+      posterPath: map['posterPath'],
+      overview: map['overview'],
+      releaseDate: map['releaseDate'],
+      isWatched: map['isWatched'] ?? false, // Add this line
     );
   }
 }

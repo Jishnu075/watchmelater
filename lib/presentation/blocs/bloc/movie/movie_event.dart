@@ -12,3 +12,8 @@ class AddMovie extends MovieEvent {
   @override
   List<Object> get props => [movie];
 }
+
+class UpdateMovieWatchStatus extends MovieEvent {
+  final bool watched;
+  UpdateMovieWatchStatus({required this.watched});
+}
