@@ -13,30 +13,18 @@ import 'package:watchmelater/presentation/blocs/bloc/movie/movie_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/search/search_bloc.dart';
 import 'package:watchmelater/presentation/pages/login_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  final User user;
-  HomeScreen({super.key, required this.user});
+class WatchScreen extends StatelessWidget {
+  // final User user;
+  WatchScreen({
+    super.key,
+    // required this.user,
+  });
 
   final TextEditingController searchMovieTextEC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text("WatchMeLater"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(SignOutRequested());
-              },
-              child: const Text('logout'),
-            ),
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showAddMovieDialog(context: context);
@@ -66,7 +54,11 @@ class HomeScreen extends StatelessWidget {
                   ? Center(child: Text('No movies found. Add some!'))
                   : RefreshIndicator.adaptive(
                       onRefresh: () async {
-                        context.read<MovieBloc>().add(LoadMoviesFromFirebase());
+                        if (shouldFetchMovies()) {
+                          context
+                              .read<MovieBloc>()
+                              .add(LoadMoviesFromFirebase());
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -76,12 +68,16 @@ class HomeScreen extends StatelessWidget {
                             childAspectRatio: 2 / 2.8,
                             mainAxisSpacing: 10,
                             crossAxisSpacing: 10,
-                            children: state.movies.reversed
-                                .map((movie) => MovieCard(
-                                      name: movie.name,
-                                      imageUrl: movie.movieImage ?? "",
-                                    ))
-                                .toList()),
+                            children: state.movies
+                                .where((movie) => movie.isWatched == false)
+                                .toList()
+                                .reversed
+                                .map((movie) {
+                              return MovieCard(
+                                name: movie.name,
+                                imageUrl: movie.movieImage ?? "",
+                              );
+                            }).toList()),
                       ),
                     );
             } else if (state is MoviesLoadError) {
@@ -111,6 +107,12 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool shouldFetchMovies() {
+    // implement logic to determine if a fetch is necessary
+    // For example, check if the last fetch was more than X minutes ago
+    return true; // Placeholder
   }
 
   void _showAddMovieDialog({required BuildContext context}) {
@@ -252,13 +254,16 @@ enum LongPressMenuItemValue { edit, remove }
 
 //TODO rftr
 class MovieCard extends StatelessWidget {
-  const MovieCard({
+  MovieCard({
     super.key,
     required this.name,
     required this.imageUrl,
   });
+
   final String name;
   final String? imageUrl;
+  final TextEditingController editMovieNameEC = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -286,11 +291,11 @@ class MovieCard extends StatelessWidget {
           Offset.zero & overlay.size,
         );
         showMenu(context: context, position: position, items: [
-          const PopupMenuItem(
-            value: LongPressMenuItemValue.edit,
-            child: ListTile(
-                title: Text("edit"), leading: Icon(Icons.edit_outlined)),
-          ),
+          PopupMenuItem(
+              value: LongPressMenuItemValue.edit,
+              child: ListTile(
+                  title: Text("Mark as watched"),
+                  leading: Icon(Icons.star_border))),
           const PopupMenuItem(
             value: LongPressMenuItemValue.remove,
             child: ListTile(
@@ -299,10 +304,16 @@ class MovieCard extends StatelessWidget {
           ),
         ]).then((value) {
           if (value == LongPressMenuItemValue.edit) {
+            editMovieNameEC.text = name;
             showDialog(
                 context: context,
                 builder: (context) {
-                  return Material(child: TextField());
+                  return AlertDialog(title: Text("Edit"), actions: [
+                    TextField(
+                      controller: editMovieNameEC,
+                    ),
+                    TextButton(onPressed: () {}, child: const Text('save'))
+                  ]);
                 });
           } else if (value == LongPressMenuItemValue.remove) {
             //TODO fix async gap

@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_event.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_state.dart';
-import 'package:watchmelater/presentation/pages/home_screen.dart';
+import 'package:watchmelater/presentation/pages/watch_screen.dart';
+import 'package:watchmelater/presentation/pages/main_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -16,9 +17,7 @@ class LoginScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is Authenticated) {
             Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => HomeScreen(user: state.user)));
+                context, MaterialPageRoute(builder: (context) => MainScreen()));
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(state.message)));

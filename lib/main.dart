@@ -9,7 +9,8 @@ import 'package:watchmelater/presentation/blocs/bloc/auth/auth_state.dart';
 import 'package:watchmelater/presentation/blocs/bloc/movie/movie_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/search/search_bloc.dart';
 import 'package:watchmelater/presentation/pages/login_screen.dart';
-import 'package:watchmelater/presentation/pages/home_screen.dart';
+import 'package:watchmelater/presentation/pages/watch_screen.dart';
+import 'package:watchmelater/presentation/pages/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,9 +49,7 @@ class _MyAppState extends State<MyApp> {
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return MaterialApp(
-            home: state is Authenticated
-                ? HomeScreen(user: state.user)
-                : const LoginScreen(),
+            home: state is Authenticated ? MainScreen() : const LoginScreen(),
           );
         },
       ),
