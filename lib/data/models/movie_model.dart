@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MovieStorage {
+  String id;
   String name;
   bool isWatched;
   String? movieImage;
   String? releaseDate;
   MovieStorage({
+    required this.id,
     required this.name,
     required this.isWatched,
     required this.movieImage,
@@ -23,6 +27,7 @@ class MovieStorage {
   // Create a Movie object from a Firestore document
   factory MovieStorage.fromMap(Map<String, dynamic> map) {
     return MovieStorage(
+      id: map['id'],
       name: map['name'],
       isWatched: map['isWatched'],
       movieImage: map['movieImage'],

@@ -18,11 +18,26 @@ class MovieRepository implements IMovieRepository {
 
   @override
   Future<void> addMovieToList({required MovieStorage movie}) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await firestore.collection('users').doc(user.uid).set({
-        'movies': FieldValue.arrayUnion([movie.toMap()])
-      }, SetOptions(merge: true));
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        DocumentReference movieDocRef = firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('movies')
+            .doc();
+
+        Map<String, dynamic> movieData = {
+          'id': movieDocRef.id,
+          ...movie.toMap()
+        };
+
+        await movieDocRef.set(movieData);
+      }
+    } catch (e) {
+      // TODO: ahem fix it man
+      print(e);
     }
   }
 
@@ -30,13 +45,21 @@ class MovieRepository implements IMovieRepository {
   Future<List<MovieStorage>> getMovies() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final snapshot = await firestore.collection('users').doc(user.uid).get();
-      final data = snapshot.data();
-      if (data != null && data['movies'] != null) {
-        return (data['movies'] as List)
-            .map((m) => MovieStorage.fromMap(m))
-            .toList();
-      }
+      final snapshot = await firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('movies')
+          .get();
+
+      return snapshot.docs.map((doc) {
+        return MovieStorage.fromMap(doc.data());
+      }).toList();
+
+      // if (data != null && data['movies'] != null) {
+      //   return (data['movies'] as List).map((m) {
+      //     return MovieStorage.fromMap(m)..id = m['id'];
+      //   }).toList();
+      // }
     }
     return [];
   }
@@ -71,8 +94,21 @@ class MovieRepository implements IMovieRepository {
 
   @override
   Future<void> updateMovieStatus(
-      {required String movieId, required bool watched}) {
-    // TODO: implement updateMovieStatus
-    throw UnimplementedError();
+      {required String movieId, required bool watched}) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        print("id - $movieId");
+        final docRef = firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('movies')
+            .doc(movieId);
+
+        await docRef.update({'isWatched': watched});
+      }
+    } catch (e) {
+      print("object, $e");
+    }
   }
 }

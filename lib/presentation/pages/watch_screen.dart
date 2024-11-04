@@ -166,6 +166,7 @@ class WatchScreen extends StatelessWidget {
                                         context
                                             .read<MovieBloc>()
                                             .add(AddMovie(MovieStorage(
+                                              id: '',
                                               name: state.movies[index].title,
                                               isWatched: false,
                                               movieImage: state
@@ -209,11 +210,11 @@ class WatchScreen extends StatelessWidget {
               onPressed: () {
                 if (movieName.isNotEmpty) {
                   context.read<MovieBloc>().add(AddMovie(MovieStorage(
-                        name: movieName,
-                        isWatched: false,
-                        movieImage: null,
-                        releaseDate: null,
-                      )));
+                      name: movieName,
+                      isWatched: false,
+                      movieImage: null,
+                      releaseDate: null,
+                      id: '')));
                   _resetMovieDialogState(context);
                 }
               },
@@ -293,8 +294,8 @@ class MovieCard extends StatelessWidget {
         showMenu(context: context, position: position, items: [
           PopupMenuItem(
               value: movie.isWatched
-                  ? LongPressMenuItemValue.moveToWatchlist
-                  : LongPressMenuItemValue.markAsWatched,
+                  ? LongPressMenuItemValue.markAsWatched
+                  : LongPressMenuItemValue.moveToWatchlist,
               child: ListTile(
                   title: movie.isWatched
                       ? Text("move to watchlist")
@@ -309,8 +310,12 @@ class MovieCard extends StatelessWidget {
                 leading: Icon(Icons.delete_forever_outlined)),
           ),
         ]).then((value) {
+          print(value);
           if (value == LongPressMenuItemValue.moveToWatchlist) {
-            context.read<MovieBloc>().add()
+            context
+                .read<MovieBloc>()
+                .add(UpdateMovieWatchStatus(watched: true, id: movie.id));
+            context.read<MovieBloc>().add(LoadMoviesFromFirebase());
           }
           // TODO : maybe edit stuff can be implemented later?
           // editMovieNameEC.text = movie.name;
@@ -448,46 +453,6 @@ class TMDBMovieTile extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class MovieStorage {
-  final String movieId; // Unique identifier for the movie
-  final String title;
-  final String posterPath;
-  final String overview;
-  final String releaseDate;
-  final bool isWatched; // Add this line
-
-  MovieStorage({
-    required this.movieId,
-    required this.title,
-    required this.posterPath,
-    required this.overview,
-    required this.releaseDate,
-    this.isWatched = false, // Default value is false
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'movieId': movieId,
-      'title': title,
-      'posterPath': posterPath,
-      'overview': overview,
-      'releaseDate': releaseDate,
-      'isWatched': isWatched, // Add this line
-    };
-  }
-
-  factory MovieStorage.fromMap(Map<String, dynamic> map) {
-    return MovieStorage(
-      movieId: map['movieId'],
-      title: map['title'],
-      posterPath: map['posterPath'],
-      overview: map['overview'],
-      releaseDate: map['releaseDate'],
-      isWatched: map['isWatched'] ?? false, // Add this line
     );
   }
 }

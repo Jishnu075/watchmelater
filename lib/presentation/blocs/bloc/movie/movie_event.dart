@@ -15,5 +15,6 @@ class AddMovie extends MovieEvent {
 
 class UpdateMovieWatchStatus extends MovieEvent {
   final bool watched;
-  UpdateMovieWatchStatus({required this.watched});
+  final String id;
+  UpdateMovieWatchStatus({required this.id, required this.watched});
 }

@@ -22,3 +22,11 @@ class MovieAddedFailure extends MovieState {
   final String message;
   MovieAddedFailure(this.message);
 }
+
+class MovieStatusUpdateError extends MovieState {
+  final String message;
+
+  MovieStatusUpdateError({required this.message});
+}
+
+class MovieStatusUpdateSuccess extends MovieState {}

@@ -28,5 +28,17 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
         emit(MoviesLoadError('Failed to load movies: ${e.toString()}'));
       }
     });
+
+    //TODO emit states better
+    on<UpdateMovieWatchStatus>((event, emit) async {
+      try {
+        await movieRepository.updateMovieStatus(
+            movieId: event.id, watched: event.watched);
+        emit(MovieStatusUpdateSuccess());
+      } catch (e) {
+        emit(MovieStatusUpdateError(
+            message: 'failed to update, try again later:( $e'));
+      }
+    });
   }
 }
