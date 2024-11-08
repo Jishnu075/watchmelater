@@ -47,11 +47,12 @@ class WatchScreen extends StatelessWidget {
             // ),
             BlocBuilder<MovieBloc, MovieState>(
           builder: (context, state) {
+            print(state);
             if (state is MovieLoading) {
               return const Center(child: CircularProgressIndicator.adaptive());
             } else if (state is MoviesLoaded) {
               return state.movies.isEmpty
-                  ? Center(child: Text('No movies found. Add some!'))
+                  ? const Center(child: Text('No movies found. Add some!'))
                   : RefreshIndicator.adaptive(
                       onRefresh: () async {
                         if (shouldFetchMovies()) {
@@ -99,6 +100,12 @@ class WatchScreen extends StatelessWidget {
               // Trigger a reload of movies after successful addition
               context.read<MovieBloc>().add(LoadMoviesFromFirebase());
               return const Center(child: CircularProgressIndicator.adaptive());
+            } else if (state is MovieStatusUpdateSuccess) {
+              context.read<MovieBloc>().add(LoadMoviesFromFirebase());
+              return const Center(child: CircularProgressIndicator.adaptive());
+            } else if (state is MovieStatusUpdateError) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('something went wrong, try moving it later')));
             }
             // Handle initial state
             return const Center(child: Text('Start by adding some movies!'));
@@ -294,8 +301,8 @@ class MovieCard extends StatelessWidget {
         showMenu(context: context, position: position, items: [
           PopupMenuItem(
               value: movie.isWatched
-                  ? LongPressMenuItemValue.markAsWatched
-                  : LongPressMenuItemValue.moveToWatchlist,
+                  ? LongPressMenuItemValue.moveToWatchlist
+                  : LongPressMenuItemValue.markAsWatched,
               child: ListTile(
                   title: movie.isWatched
                       ? Text("move to watchlist")
@@ -309,13 +316,17 @@ class MovieCard extends StatelessWidget {
                 title: Text("remove"),
                 leading: Icon(Icons.delete_forever_outlined)),
           ),
-        ]).then((value) {
+        ]).then((value) async {
           print(value);
-          if (value == LongPressMenuItemValue.moveToWatchlist) {
+          if (value == LongPressMenuItemValue.markAsWatched) {
             context
                 .read<MovieBloc>()
                 .add(UpdateMovieWatchStatus(watched: true, id: movie.id));
-            context.read<MovieBloc>().add(LoadMoviesFromFirebase());
+          } else if (value == LongPressMenuItemValue.moveToWatchlist) {
+            print('entered');
+            context
+                .read<MovieBloc>()
+                .add(UpdateMovieWatchStatus(watched: false, id: movie.id));
           }
           // TODO : maybe edit stuff can be implemented later?
           // editMovieNameEC.text = movie.name;
