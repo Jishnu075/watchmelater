@@ -6,12 +6,14 @@ class MovieStorage {
   bool isWatched;
   String? movieImage;
   String? releaseDate;
+  Timestamp addedOn;
   MovieStorage({
     required this.id,
     required this.name,
     required this.isWatched,
     required this.movieImage,
     required this.releaseDate,
+    required this.addedOn,
   });
 
   // Convert a Movie object into a map for Firestore
@@ -21,6 +23,7 @@ class MovieStorage {
       'isWatched': isWatched,
       'movieImage': movieImage,
       'releaseDate': releaseDate,
+      'addedOn': addedOn,
     };
   }
 
@@ -32,6 +35,7 @@ class MovieStorage {
       isWatched: map['isWatched'],
       movieImage: map['movieImage'],
       releaseDate: map['releaseDate'],
+      addedOn: map['addedOn'],
     );
   }
 }

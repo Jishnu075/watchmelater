@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -180,6 +181,7 @@ class WatchScreen extends StatelessWidget {
                                                   .movies[index].posterPath!,
                                               releaseDate: state
                                                   .movies[index].releaseDate!,
+                                              addedOn: Timestamp.now(),
                                             )));
                                         _resetMovieDialogState(context);
                                       }
@@ -217,11 +219,13 @@ class WatchScreen extends StatelessWidget {
               onPressed: () {
                 if (movieName.isNotEmpty) {
                   context.read<MovieBloc>().add(AddMovie(MovieStorage(
-                      name: movieName,
-                      isWatched: false,
-                      movieImage: null,
-                      releaseDate: null,
-                      id: '')));
+                        name: movieName,
+                        isWatched: false,
+                        movieImage: null,
+                        releaseDate: null,
+                        id: '',
+                        addedOn: Timestamp.now(),
+                      )));
                   _resetMovieDialogState(context);
                 }
               },

@@ -49,6 +49,7 @@ class MovieRepository implements IMovieRepository {
           .collection('users')
           .doc(user.uid)
           .collection('movies')
+          .orderBy('addedOn', descending: false)
           .get();
 
       return snapshot.docs.map((doc) {
