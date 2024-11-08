@@ -15,7 +15,9 @@ class WatchedScreen extends StatelessWidget {
           if (state is MovieLoading) {
             return const Center(child: CircularProgressIndicator.adaptive());
           } else if (state is MoviesLoaded) {
-            return state.movies.isEmpty
+            final watchedMovies =
+                state.movies.where((movie) => movie.isWatched == true);
+            return watchedMovies.isEmpty
                 ? const Center(child: Text('No watched movies yet!'))
                 : RefreshIndicator.adaptive(
                     onRefresh: () async {
@@ -29,11 +31,7 @@ class WatchedScreen extends StatelessWidget {
                         childAspectRatio: 2 / 2.8,
                         mainAxisSpacing: 10,
                         crossAxisSpacing: 10,
-                        children: state.movies
-                            .where((movie) => movie.isWatched == true)
-                            .toList()
-                            .reversed
-                            .map((movie) {
+                        children: watchedMovies.toList().reversed.map((movie) {
                           return MovieCard(
                             movie: movie,
                           );
