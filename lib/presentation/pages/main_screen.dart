@@ -4,6 +4,7 @@ import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_event.dart';
 import 'package:watchmelater/presentation/pages/watch_screen.dart';
 import 'package:watchmelater/presentation/pages/watched_screen.dart';
+import 'package:watchmelater/presentation/styles.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -23,7 +24,7 @@ class _MyWidgetState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text("WatchMeLater"),
+        title: const Text("watchmeLATER"),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),

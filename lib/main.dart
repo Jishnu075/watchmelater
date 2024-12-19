@@ -49,6 +49,7 @@ class _MyAppState extends State<MyApp> {
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: state is Authenticated ? MainScreen() : const LoginScreen(),
           );
         },
