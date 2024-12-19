@@ -1,4 +1,4 @@
-package com.example.watchmelater
+package com.jishnu.watchmelater
 
 import io.flutter.embedding.android.FlutterActivity
 

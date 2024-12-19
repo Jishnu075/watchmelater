@@ -8,6 +8,7 @@ class FirebaseService {
 
   static Future<void> init() async {
     await Firebase.initializeApp(
+        name: 'watchmelater-28cf2',
         options: DefaultFirebaseOptions.currentPlatform);
     _firestore = FirebaseFirestore.instance;
   }
