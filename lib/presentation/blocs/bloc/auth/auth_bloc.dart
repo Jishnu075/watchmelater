@@ -46,5 +46,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthError("error occured during signout : $e"));
       }
     });
+    on<BackToLogin>((event, emit) => emit(UnAuthenticated()));
   }
 }
