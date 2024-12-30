@@ -5,8 +5,7 @@ import 'package:watchmelater/domain/repositories/i_auth_repository.dart';
 
 class AuthRepository implements IAuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn =
-      GoogleSignIn(clientId: dotenv.env['GOOGLE_CLIENT_ID']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
