@@ -173,7 +173,8 @@ class WatchScreen extends StatelessWidget {
                               return InkWell(
                                   onTap: () {
                                     if (searchMovieTextEC.text.isNotEmpty) {
-                                      if (movieName.isNotEmpty) {
+                                      if (state
+                                          .movies[index].title.isNotEmpty) {
                                         context
                                             .read<MovieBloc>()
                                             .add(AddMovie(MovieStorage(
@@ -181,9 +182,9 @@ class WatchScreen extends StatelessWidget {
                                               name: state.movies[index].title,
                                               isWatched: false,
                                               movieImage: state
-                                                  .movies[index].posterPath!,
+                                                  .movies[index].posterPath,
                                               releaseDate: state
-                                                  .movies[index].releaseDate!,
+                                                  .movies[index].releaseDate,
                                               addedOn: Timestamp.now(),
                                             )));
                                         _resetMovieDialogState(context);
