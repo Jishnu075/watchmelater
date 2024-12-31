@@ -13,6 +13,12 @@ class AddMovie extends MovieEvent {
   List<Object> get props => [movie];
 }
 
+class RemoveMovie extends MovieEvent {
+  final String id;
+
+  RemoveMovie({required this.id});
+}
+
 class UpdateMovieWatchStatus extends MovieEvent {
   final bool watched;
   final String id;

@@ -107,6 +107,13 @@ class WatchScreen extends StatelessWidget {
             } else if (state is MovieStatusUpdateError) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text('something went wrong, try moving it later')));
+            } else if (state is MovieRemoved) {
+              context.read<MovieBloc>().add(LoadMoviesFromFirebase());
+              return const Center(child: CircularProgressIndicator.adaptive());
+            } else if (state is MovieRemovalError) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content:
+                      Text('something went wrong, try removing it later')));
             }
             // Handle initial state
             return const Center(child: Text('Start by adding some movies!'));
@@ -330,13 +337,11 @@ class MovieCard extends StatelessWidget {
                 leading: Icon(Icons.delete_forever_outlined)),
           ),
         ]).then((value) async {
-          print(value);
           if (value == LongPressMenuItemValue.markAsWatched) {
             context
                 .read<MovieBloc>()
                 .add(UpdateMovieWatchStatus(watched: true, id: movie.id));
           } else if (value == LongPressMenuItemValue.moveToWatchlist) {
-            print('entered');
             context
                 .read<MovieBloc>()
                 .add(UpdateMovieWatchStatus(watched: false, id: movie.id));
@@ -366,10 +371,10 @@ class MovieCard extends StatelessWidget {
                   TextButton(
                       child: Text('remove'),
                       onPressed: () {
-                        //call firebase call to delete
-                        // while delete process show progress if needed
-                        // if firebase deletion success, delete the movie from the list as well.
-
+                        context
+                            .read<MovieBloc>()
+                            .add(RemoveMovie(id: movie.id));
+                        Navigator.pop(context);
                         //TODO: add removal sound effect later
                       }),
                 ],

@@ -29,6 +29,19 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
       }
     });
 
+    on<RemoveMovie>(
+      (event, emit) async {
+        emit(MovieLoading());
+        try {
+          await movieRepository.removeMovieFromList(movieId: event.id);
+          emit(MovieRemoved());
+        } catch (e) {
+          emit(MovieRemovalError(
+              message: 'Failed to remove the movie: ${e.toString()}'));
+        }
+      },
+    );
+
     //TODO emit states better
     on<UpdateMovieWatchStatus>((event, emit) async {
       try {

@@ -23,6 +23,14 @@ class MovieAddedFailure extends MovieState {
   MovieAddedFailure(this.message);
 }
 
+class MovieRemoved extends MovieState {}
+
+class MovieRemovalError extends MovieState {
+  final String message;
+
+  MovieRemovalError({required this.message});
+}
+
 class MovieStatusUpdateError extends MovieState {
   final String message;
 

@@ -11,9 +11,21 @@ class MovieRepository implements IMovieRepository {
   MovieRepository({required this.firestore});
 
   @override
-  Future<void> removeMovieFromList() {
-    // TODO: implement removeMovieFromList
-    throw UnimplementedError();
+  Future<void> removeMovieFromList({required movieId}) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final docRef = firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('movies')
+            .doc(movieId);
+
+        await docRef.delete();
+      }
+    } catch (e) {
+      print("remove errror, $e");
+    }
   }
 
   @override
