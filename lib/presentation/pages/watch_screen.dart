@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -128,41 +129,44 @@ class WatchScreen extends StatelessWidget {
         String movieName = '';
         return AlertDialog(
           title: const Text('Add Movie'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: searchMovieTextEC,
-                onChanged: (value) {
-                  _onSearchChanged(context, value);
-                  movieName = value;
-                },
-                decoration: InputDecoration(
-                  hintText: "Enter movie name",
-                  // focusedBorder:
-                  //     OutlineInputBorder(borderSide: BorderSide(width: 0.1)),
-                  border:
-                      OutlineInputBorder(borderSide: BorderSide(width: 0.1)),
-                  suffixIcon: BlocBuilder<SearchBloc, SearchState>(
-                    builder: (context, state) {
-                      if (state is SearchingMovieLoading) {
-                        return const CircularProgressIndicator.adaptive();
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    },
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.70,
+            // height: MediaQuery.of(context).size.height * 0.35,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: searchMovieTextEC,
+                  onChanged: (value) {
+                    _onSearchChanged(context, value);
+                    movieName = value;
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Enter movie name",
+                    // focusedBorder:
+                    //     OutlineInputBorder(borderSide: BorderSide(width: 0.1)),
+                    border:
+                        OutlineInputBorder(borderSide: BorderSide(width: 0.1)),
+                    suffixIcon: BlocBuilder<SearchBloc, SearchState>(
+                      builder: (context, state) {
+                        if (state is SearchingMovieLoading) {
+                          return Transform.scale(
+                              scale: Platform.isAndroid ? 0.5 : 1.0,
+                              child:
+                                  const CircularProgressIndicator.adaptive());
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
+                    ),
                   ),
                 ),
-              ),
-              BlocBuilder<SearchBloc, SearchState>(
-                builder: (context, state) {
-                  if (state is SearchingMovieCompleted) {
-                    if (state.movies.isNotEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.20,
-                          width: MediaQuery.of(context).size.width * 0.70,
+                const SizedBox(height: 10),
+                BlocBuilder<SearchBloc, SearchState>(
+                  builder: (context, state) {
+                    if (state is SearchingMovieCompleted) {
+                      if (state.movies.isNotEmpty) {
+                        return Expanded(
                           child: ListView.separated(
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
@@ -191,21 +195,22 @@ class WatchScreen extends StatelessWidget {
                                     movieThumbnailURL:
                                         state.movies[index].posterPath,
                                     yearOfRelease: getYearOfRelease(
-                                        state.movies[index].releaseDate ?? ''),
+                                        state.movies[index].releaseDate ??
+                                            'unknown'),
                                   ));
                             },
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 8),
                             itemCount: state.movies.length,
                           ),
-                        ),
-                      );
+                        );
+                      }
                     }
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ],
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ],
+            ),
           ),
           actions: <Widget>[
             TextButton(
@@ -242,7 +247,11 @@ class WatchScreen extends StatelessWidget {
   }
 
   String getYearOfRelease(String releaseDate) {
-    return releaseDate.split('-')[0];
+    if (releaseDate.trim().isNotEmpty) {
+      return releaseDate.split('-')[0];
+    } else {
+      return 'unknown';
+    }
   }
 
   String _searchQuery = '';
@@ -414,8 +423,6 @@ class TMDBMovieTile extends StatelessWidget {
           color: Color.fromARGB(203, 246, 236, 255),
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(10), bottomRight: Radius.circular(10))),
-      width: MediaQuery.sizeOf(context).width * 0.75,
-      height: MediaQuery.sizeOf(context).height * 0.0855,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -454,6 +461,7 @@ class TMDBMovieTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     softWrap: true,
                   ),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       const Icon(CupertinoIcons.calendar, size: 14),
