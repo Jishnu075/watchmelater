@@ -429,18 +429,13 @@ class TMDBMovieTile extends StatelessWidget {
           Flexible(
             flex: 2,
             child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Container(
-                  width: MediaQuery.of(context).size.width * 0.13,
-                  height: MediaQuery.of(context).size.height * 0.0855,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: movieThumbnailURL != null
-                              ? NetworkImage(
-                                  movieThumbnailURL!,
-                                )
-                              : const AssetImage(
-                                  'assets/poster-not-available.jpg')))),
+              padding: const EdgeInsets.all(6.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: movieThumbnailURL != null
+                    ? Image.network(movieThumbnailURL!)
+                    : Image.asset('assets/poster-not-available.jpg'),
+              ),
             ),
           ),
           Flexible(
