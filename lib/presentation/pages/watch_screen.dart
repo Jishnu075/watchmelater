@@ -47,7 +47,6 @@ class WatchScreen extends StatelessWidget {
             // Center(
             //   child: Text(user.displayName ?? "no name available"),
             // ),
-            // sectiontitle
             BlocBuilder<MovieBloc, MovieState>(
           builder: (context, state) {
             print(state);
@@ -69,6 +68,7 @@ class WatchScreen extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GridView.count(
+                            physics: const BouncingScrollPhysics(),
                             dragStartBehavior: DragStartBehavior.start,
                             crossAxisCount: 3,
                             childAspectRatio: 2 / 2.8,

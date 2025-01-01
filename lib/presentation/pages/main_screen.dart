@@ -24,7 +24,7 @@ class _MyWidgetState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: const Text("watchmeLATER"),
+        title: Text(_currentIndex == 0 ? "watchlist" : "watched"),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
