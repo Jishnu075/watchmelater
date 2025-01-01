@@ -7,6 +7,7 @@ class MovieStorage {
   String? movieImage;
   String? releaseDate;
   Timestamp addedOn;
+  String? overview;
   MovieStorage({
     required this.id,
     required this.name,
@@ -14,6 +15,7 @@ class MovieStorage {
     required this.movieImage,
     required this.releaseDate,
     required this.addedOn,
+    required this.overview,
   });
 
   // Convert a Movie object into a map for Firestore
@@ -24,6 +26,7 @@ class MovieStorage {
       'movieImage': movieImage,
       'releaseDate': releaseDate,
       'addedOn': addedOn,
+      'overview': overview,
     };
   }
 
@@ -36,6 +39,7 @@ class MovieStorage {
       movieImage: map['movieImage'],
       releaseDate: map['releaseDate'],
       addedOn: map['addedOn'],
+      overview: map['overview'],
     );
   }
 }

@@ -193,6 +193,8 @@ class WatchScreen extends StatelessWidget {
                                               releaseDate: state
                                                   .movies[index].releaseDate,
                                               addedOn: Timestamp.now(),
+                                              overview:
+                                                  state.movies[index].overview,
                                             )));
                                         _resetMovieDialogState(context);
                                       }
@@ -237,6 +239,7 @@ class WatchScreen extends StatelessWidget {
                         releaseDate: null,
                         id: '',
                         addedOn: Timestamp.now(),
+                        overview: null,
                       )));
                   _resetMovieDialogState(context);
                 }
@@ -252,14 +255,6 @@ class WatchScreen extends StatelessWidget {
     searchMovieTextEC.clear();
     context.read<SearchBloc>().add(ResetMovieBlocState());
     Navigator.of(context).pop();
-  }
-
-  String getYearOfRelease(String releaseDate) {
-    if (releaseDate.trim().isNotEmpty) {
-      return releaseDate.split('-')[0];
-    } else {
-      return 'unknown';
-    }
   }
 
   String _searchQuery = '';
@@ -296,14 +291,45 @@ class MovieCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showCupertinoModalPopup(
+        showModalBottomSheet(
+            showDragHandle: true,
+            isScrollControlled: true,
+            isDismissible: true,
+            constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * 0.75),
             context: context,
             builder: (context) {
-              //TODO add movie detail
-              //rating, desc, title, sa
-              return Container(
-                height: 300,
-                color: Colors.green,
+              return IntrinsicHeight(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10, left: 12, right: 12, bottom: 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          movie.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 24),
+                        ),
+                        const SizedBox(height: 25),
+                        const Text("overview",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w300, fontSize: 14)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            movie.overview ?? "",
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        ),
+                        if (movie.releaseDate != null)
+                          Text(
+                              "Released on: ${getYearOfRelease(movie.releaseDate!)}"),
+                      ],
+                    ),
+                  ),
+                ),
               );
             });
       },
@@ -477,5 +503,13 @@ class TMDBMovieTile extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String getYearOfRelease(String releaseDate) {
+  if (releaseDate.trim().isNotEmpty) {
+    return releaseDate.split('-')[0];
+  } else {
+    return 'unknown';
   }
 }
