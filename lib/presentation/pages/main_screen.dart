@@ -26,16 +26,29 @@ class _MyWidgetState extends State<MainScreen> {
         centerTitle: false,
         title: Text(_currentIndex == 0 ? "watchlist" : "watched"),
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(SignOutRequested());
-              },
-              child: const Text('logout'),
-            ),
+          Builder(
+            builder: (context) => Padding(
+                padding: const EdgeInsets.all(8.0), child: EndDrawerButton()),
           ),
         ],
+      ),
+      endDrawer: Drawer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DrawerHeader(child: Text("More")),
+            TextButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text("You!")));
+                },
+                child: Text("What\'s New")),
+            TextButton(
+                onPressed: () =>
+                    context.read<AuthBloc>().add(SignOutRequested()),
+                child: Text("Logout")),
+          ],
+        ),
       ),
       body: IndexedStack(
         index: _currentIndex,
