@@ -47,6 +47,7 @@ class WatchScreen extends StatelessWidget {
             // Center(
             //   child: Text(user.displayName ?? "no name available"),
             // ),
+            // sectiontitle
             BlocBuilder<MovieBloc, MovieState>(
           builder: (context, state) {
             print(state);
@@ -304,29 +305,32 @@ class MovieCard extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(
                         top: 10, left: 12, right: 12, bottom: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          movie.name,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 24),
-                        ),
-                        const SizedBox(height: 25),
-                        const Text("overview",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300, fontSize: 14)),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            movie.overview ?? "",
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ),
-                        if (movie.releaseDate != null)
+                    child: SizedBox(
+                      width: MediaQuery.sizeOf(context).width,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                              "Released on: ${getYearOfRelease(movie.releaseDate!)}"),
-                      ],
+                            movie.name,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 24),
+                          ),
+                          const SizedBox(height: 25),
+                          const Text("overview",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w300, fontSize: 14)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              movie.overview ?? "",
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ),
+                          if (movie.releaseDate != null)
+                            Text(
+                                "Released on: ${getYearOfRelease(movie.releaseDate!)}"),
+                        ],
+                      ),
                     ),
                   ),
                 ),
