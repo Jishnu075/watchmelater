@@ -44,6 +44,7 @@ dependencies:
   cloud_firestore: ^5.4.4
   dio: ^5.7.0
   flutter_dotenv: ^5.2.1
+  firebase_remote_config: ^5.2.0
 
 dev_dependencies:
   flutter_test:

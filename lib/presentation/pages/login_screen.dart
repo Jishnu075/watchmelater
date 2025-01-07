@@ -1,5 +1,7 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watchmelater/core/services/firebase_remoteconfig_service.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_event.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_state.dart';
@@ -12,6 +14,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseRemoteconfigService firebaseRemoteconfigService;
     return Scaffold(
       appBar: AppBar(title: const Text('watchmeLATER'), centerTitle: false),
       body: BlocListener<AuthBloc, AuthState>(
@@ -39,8 +42,10 @@ class LoginScreen extends StatelessWidget {
                         child: Image.asset('assets/tomjerry.jpg'),
                       ),
                       const SizedBox(width: 200, child: Divider()),
-                      const Text(
-                        'Ughh, simple app to save those movies for later. That\'s it.\nJust login and save them.\n No bs.',
+                      Text(
+                        // 'Ughh, simple app to save those movies for later. That\'s it.\nJust login and save them.\n No bs.',
+                        FirebaseRemoteConfig.instance
+                            .getString('welcome_message'),
                         textAlign: TextAlign.center,
                         style: appBarTitleTextStyle,
                       ),
