@@ -16,7 +16,7 @@ class FirebaseRemoteconfigService {
     await _firebaseRemoteConfig.setConfigSettings(RemoteConfigSettings(
         fetchTimeout: const Duration(seconds: 10),
         // the minimum fetch duration is set for 1hour, so any changes made in the remote config only appears after 1hour (cache mechanism)
-        minimumFetchInterval: Duration.zero));
+        minimumFetchInterval: const Duration(hours: 1)));
     await _firebaseRemoteConfig.setDefaults({
       'welcome_message':
           'Just login and save those movies you want to watch later.'
