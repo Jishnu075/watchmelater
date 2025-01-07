@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_event.dart';
@@ -57,6 +58,7 @@ class _MyWidgetState extends State<MainScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
+          HapticFeedback.lightImpact();
           setState(() {
             _currentIndex = index;
           });

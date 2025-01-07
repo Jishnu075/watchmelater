@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watchmelater/data/models/movie_model.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
@@ -338,7 +339,7 @@ class MovieCard extends StatelessWidget {
             });
       },
       onLongPressStart: (details) {
-        //TODO: enable small haptic on longpress
+        HapticFeedback.lightImpact();
         final RenderBox overlay =
             Overlay.of(context).context.findRenderObject() as RenderBox;
         final RelativeRect position = RelativeRect.fromRect(
