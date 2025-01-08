@@ -59,7 +59,7 @@ jobs:
         run: |
           keytool -list -v \
             -alias ${{ secrets.KEY_ALIAS }} \
-            -keystore android/app/upload-keystore.jks \
+            -keystore android/upload-keystore.jks \
             -storepass ${{ secrets.STORE_PASSWORD }} \
             | grep -A 2 "Certificate fingerprints:"
           
