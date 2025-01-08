@@ -53,6 +53,15 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+
+          # to test keystore
+      - name: Display Release Key Fingerprints
+        run: |
+          keytool -list -v \
+            -alias ${{ secrets.KEY_ALIAS }} \
+            -keystore android/app/upload-keystore.jks \
+            -storepass ${{ secrets.STORE_PASSWORD }} \
+            | grep -A 2 "Certificate fingerprints:"
           
       - name: Build Android APK
         run: flutter build apk --release
