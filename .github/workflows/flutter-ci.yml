@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     
     steps:
       - uses: actions/checkout@v3
@@ -53,20 +53,6 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-
-      - name: Debug key.properties
-        run: |
-          echo "Debugging key.properties file:"
-          cat android/key.properties
-
-          # to test keystore
-      - name: Display Release Key Fingerprints
-        run: |
-          keytool -list -v \
-            -alias ${{ secrets.KEY_ALIAS }} \
-            -keystore android/app/upload-keystore.jks \
-            -storepass ${{ secrets.STORE_PASSWORD }} \
-            | grep -A 2 "Certificate fingerprints:"
           
       - name: Build Android APK
         run: flutter build apk --release
