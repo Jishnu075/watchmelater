@@ -54,6 +54,11 @@ jobs:
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
 
+      - name: Debug key.properties
+        run: |
+          echo "Debugging key.properties file:"
+          cat android/key.properties
+
           # to test keystore
       - name: Display Release Key Fingerprints
         run: |
