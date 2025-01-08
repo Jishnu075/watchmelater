@@ -5,11 +5,18 @@ on:
     branches:
       - release
     tags:
-      - 'v*' # Triggers on version tags like v1.0.0
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: macos-latest 
+    runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v3
@@ -17,8 +24,18 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.3' # Specify your Flutter version
+          flutter-version: '3.24.3'
           channel: 'stable'
+          
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.android/build-cache
+            ~/.pub-cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
           
       - name: Install dependencies
         run: flutter pub get
@@ -29,25 +46,36 @@ jobs:
           echo "${{ secrets.IOS_GOOGLE_SERVICES_JSON }}" | base64 -d > ios/Runner/GoogleService-Info.plist
           echo "${{ secrets.ENV_FILE }}" | base64 -d > .env
           
+      - name: Setup Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          
       - name: Build Android APK
         run: flutter build apk --release
         
       - name: Build Android App Bundle
         run: flutter build appbundle --release
         
-      # Optional: Build iOS (requires additional setup for certificates)
-      # - name: Build iOS
-      #   run: |
-      #     cd ios
-      #     pod install
-      #     cd ..
-      #     flutter build ios --release --no-codesign
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: build-outputs
+          path: |
+            build/app/outputs/flutter-apk/
+            build/app/outputs/bundle/
+          retention-days: 5
           
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')  # Only run on tag pushes
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: |
             build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/bundle/release/app-release.aab
+          name: Release ${{ github.ref_name }}
           generate_release_notes: true
