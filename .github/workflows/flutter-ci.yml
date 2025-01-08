@@ -36,12 +36,12 @@ jobs:
         run: flutter build appbundle --release
         
       # Optional: Build iOS (requires additional setup for certificates)
-      - name: Build iOS
-        run: |
-          cd ios
-          pod install
-          cd ..
-          flutter build ios --release --no-codesign
+      # - name: Build iOS
+      #   run: |
+      #     cd ios
+      #     pod install
+      #     cd ..
+      #     flutter build ios --release --no-codesign
           
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')  # Only run on tag pushes
