@@ -34,12 +34,12 @@ android {
     }
     signingConfigs {
         release {
-            if (project.hasProperty('storeFile')) {
-                storeFile file(project.storeFile)
-                storePassword project.storePassword
-                keyAlias project.keyAlias
-                keyPassword project.keyPassword
-            }
+            def keyProperties = new Properties()
+            keyProperties.load(new FileInputStream(rootProject.file("android/key.properties")))
+            storeFile file(keyProperties["storeFile"])
+            storePassword keyProperties["storePassword"]
+            keyAlias keyProperties["keyAlias"]
+            keyPassword keyProperties["keyPassword"]
         }
     }
 
