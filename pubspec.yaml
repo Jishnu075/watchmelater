@@ -59,9 +59,14 @@ dev_dependencies:
   monarch: ^3.0.0
   build_runner: ^2.1.11
   flutter_launcher_icons: ^0.14.2
+  flutter_native_splash: ^2.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_native_splash:
+  color: "#000000"
+  background_image: "assets/app-logo.png"
 
 flutter_launcher_icons:
   android: true
