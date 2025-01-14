@@ -5,6 +5,7 @@ import 'package:watchmelater/core/services/firebase_remoteconfig_service.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_event.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_state.dart';
+import 'package:watchmelater/presentation/blocs/bloc/movie/movie_bloc.dart';
 import 'package:watchmelater/presentation/pages/watch_screen.dart';
 import 'package:watchmelater/presentation/pages/main_screen.dart';
 import 'package:watchmelater/presentation/styles.dart';
@@ -30,7 +31,9 @@ class LoginScreen extends StatelessWidget {
         },
         child: SafeArea(
           child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-            if (state is UnAuthenticated) {
+            if (state is AuthLoading) {
+              return const Center(child: CircularProgressIndicator.adaptive());
+            } else {
               return Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -66,8 +69,6 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ]),
               );
-            } else {
-              return const Center(child: CircularProgressIndicator.adaptive());
             }
           }),
         ),

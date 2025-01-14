@@ -16,7 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user != null) {
         emit(Authenticated(user));
       } else {
-        emit(UnAuthenticated());
+        emit(AuthInitial());
       }
     });
 
@@ -38,14 +38,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<SignOutRequested>((event, emit) async {
+      emit(AuthLoading());
       try {
         await _firebaseAuth.signOut();
         await _googleSignIn.signOut();
-        emit(UnAuthenticated());
+        emit(AuthInitial());
       } catch (e) {
         emit(AuthError("error occured during signout : $e"));
       }
     });
-    on<BackToLogin>((event, emit) => emit(UnAuthenticated()));
+    on<BackToLogin>((event, emit) => emit(AuthInitial()));
   }
 }

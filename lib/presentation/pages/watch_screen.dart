@@ -36,7 +36,7 @@ class WatchScreen extends StatelessWidget {
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is UnAuthenticated) {
+          if (state is AuthInitial) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()));
           } else if (state is AuthError) {
@@ -255,7 +255,7 @@ class WatchScreen extends StatelessWidget {
 
   void _resetMovieDialogState(BuildContext context) {
     searchMovieTextEC.clear();
-    context.read<SearchBloc>().add(ResetMovieBlocState());
+    context.read<SearchBloc>().add(ResetSearchBlocState());
     Navigator.of(context).pop();
   }
 

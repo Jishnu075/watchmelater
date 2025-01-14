@@ -24,3 +24,5 @@ class UpdateMovieWatchStatus extends MovieEvent {
   final String id;
   UpdateMovieWatchStatus({required this.id, required this.watched});
 }
+
+class ResetMovieBloc extends MovieEvent {}

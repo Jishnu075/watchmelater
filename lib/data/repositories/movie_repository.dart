@@ -55,26 +55,30 @@ class MovieRepository implements IMovieRepository {
 
   @override
   Future<List<MovieStorage>> getMovies() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final snapshot = await firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('movies')
-          .orderBy('addedOn', descending: false)
-          .get();
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final snapshot = await firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('movies')
+            .orderBy('addedOn', descending: false)
+            .get();
 
-      return snapshot.docs.map((doc) {
-        return MovieStorage.fromMap(doc.data());
-      }).toList();
+        return snapshot.docs.map((doc) {
+          return MovieStorage.fromMap(doc.data());
+        }).toList();
 
-      // if (data != null && data['movies'] != null) {
-      //   return (data['movies'] as List).map((m) {
-      //     return MovieStorage.fromMap(m)..id = m['id'];
-      //   }).toList();
-      // }
+        // if (data != null && data['movies'] != null) {
+        //   return (data['movies'] as List).map((m) {
+        //     return MovieStorage.fromMap(m)..id = m['id'];
+        //   }).toList();
+        // }
+      }
+      return [];
+    } catch (e) {
+      rethrow;
     }
-    return [];
   }
 
   @override

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_bloc.dart';
 import 'package:watchmelater/presentation/blocs/bloc/auth/auth_event.dart';
+import 'package:watchmelater/presentation/blocs/bloc/movie/movie_bloc.dart';
+import 'package:watchmelater/presentation/pages/login_screen.dart';
 import 'package:watchmelater/presentation/pages/watch_screen.dart';
 import 'package:watchmelater/presentation/pages/watched_screen.dart';
 import 'package:watchmelater/presentation/styles.dart';
@@ -45,8 +47,13 @@ class _MyWidgetState extends State<MainScreen> {
                 },
                 child: Text("What\'s New")),
             TextButton(
-                onPressed: () =>
-                    context.read<AuthBloc>().add(SignOutRequested()),
+                onPressed: () {
+                  context.read<AuthBloc>().add(SignOutRequested());
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      (route) => false);
+                },
                 child: Text("Logout")),
           ],
         ),

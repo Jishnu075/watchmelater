@@ -53,5 +53,9 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
             message: 'failed to update, try again later:( $e'));
       }
     });
+
+    on<ResetMovieBloc>((event, emit) {
+      emit(MovieInitial());
+    });
   }
 }

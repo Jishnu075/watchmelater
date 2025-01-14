@@ -20,7 +20,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       }
     });
 
-    on<ResetMovieBlocState>((event, emit) {
+    on<ResetSearchBlocState>((event, emit) {
       emit(SearchInitial());
     });
   }

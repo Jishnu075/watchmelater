@@ -8,4 +8,4 @@ class SearchMovieOnTMDB extends SearchEvent {
   SearchMovieOnTMDB({required this.movieName});
 }
 
-class ResetMovieBlocState extends SearchEvent {}
+class ResetSearchBlocState extends SearchEvent {}
