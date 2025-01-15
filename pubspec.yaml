@@ -45,6 +45,7 @@ dependencies:
   dio: ^5.7.0
   flutter_dotenv: ^5.2.1
   firebase_remote_config: ^5.2.0
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:
