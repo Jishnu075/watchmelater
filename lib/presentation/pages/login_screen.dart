@@ -79,7 +79,11 @@ class LoginScreen extends StatelessWidget {
                               // icon: Icon(Icons.g_mobiledata),
                               style: FilledButton.styleFrom(
                                   backgroundColor: Colors.white10),
-                              onPressed: () {},
+                              onPressed: () {
+                                context
+                                    .read<AuthBloc>()
+                                    .add(GoogleSignInRequested());
+                              },
                               child: const Text('Login with Google')),
                         ),
                       ],
