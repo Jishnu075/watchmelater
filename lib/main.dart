@@ -11,6 +11,7 @@ import 'package:watchmelater/presentation/blocs/bloc/search/search_bloc.dart';
 import 'package:watchmelater/presentation/pages/login_screen.dart';
 import 'package:watchmelater/presentation/pages/watch_screen.dart';
 import 'package:watchmelater/presentation/pages/main_screen.dart';
+import 'package:watchmelater/presentation/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,8 @@ class _MyAppState extends State<MyApp> {
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return MaterialApp(
+            theme: lightTheme,
+            darkTheme: darkTheme,
             debugShowCheckedModeBanner: false,
             home: state is Authenticated ? MainScreen() : const LoginScreen(),
           );
