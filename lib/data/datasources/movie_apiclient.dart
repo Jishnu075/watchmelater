@@ -11,6 +11,9 @@ class MovieApiClient {
       : _dio = Dio(BaseOptions(
           baseUrl: baseTMDBUrl,
           queryParameters: {'api_key': apiKEY},
+          connectTimeout: const Duration(seconds: 30),
+          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
         ));
 
   Future<List<MovieTMDB>> searchMovies(String query) async {

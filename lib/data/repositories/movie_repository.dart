@@ -25,6 +25,7 @@ class MovieRepository implements IMovieRepository {
       }
     } catch (e) {
       print("remove errror, $e");
+      rethrow;
     }
   }
 
@@ -50,6 +51,7 @@ class MovieRepository implements IMovieRepository {
     } catch (e) {
       // TODO: ahem fix it man
       print(e);
+      rethrow;
     }
   }
 
@@ -105,7 +107,7 @@ class MovieRepository implements IMovieRepository {
       }).toList();
       return movies;
     } catch (e) {
-      return [];
+      rethrow;
     }
   }
 
@@ -126,6 +128,7 @@ class MovieRepository implements IMovieRepository {
       }
     } catch (e) {
       print("object, $e");
+      rethrow;
     }
   }
 }

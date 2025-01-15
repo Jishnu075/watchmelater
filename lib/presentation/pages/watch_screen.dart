@@ -88,7 +88,7 @@ class WatchScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(state.message),
+                    Text(state.errorType.message),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => context
@@ -152,10 +152,8 @@ class WatchScreen extends StatelessWidget {
                   },
                   decoration: InputDecoration(
                     hintText: "Enter movie name",
-                    // focusedBorder:
-                    //     OutlineInputBorder(borderSide: BorderSide(width: 0.1)),
-                    border:
-                        OutlineInputBorder(borderSide: BorderSide(width: 0.1)),
+                    border: const OutlineInputBorder(
+                        borderSide: BorderSide(width: 0.1)),
                     suffixIcon: BlocBuilder<SearchBloc, SearchState>(
                       builder: (context, state) {
                         if (state is SearchingMovieLoading) {

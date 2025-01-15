@@ -12,29 +12,33 @@ class MoviesLoaded extends MovieState {
 }
 
 class MoviesLoadError extends MovieState {
-  final String message;
-  MoviesLoadError(this.message);
+  final ErrorType errorType;
+
+  MoviesLoadError(this.errorType);
 }
 
 class MovieAdded extends MovieState {}
 
 class MovieAddedFailure extends MovieState {
-  final String message;
-  MovieAddedFailure(this.message);
+  final ErrorType errorType;
+  String get message => errorType.message;
+  IconData get icon => errorType.icon;
+  Color get color => errorType.color;
+  MovieAddedFailure(this.errorType);
 }
 
 class MovieRemoved extends MovieState {}
 
 class MovieRemovalError extends MovieState {
-  final String message;
+  final ErrorType errorType;
 
-  MovieRemovalError({required this.message});
+  MovieRemovalError(this.errorType);
 }
 
 class MovieStatusUpdateError extends MovieState {
-  final String message;
+  final ErrorType errorType;
 
-  MovieStatusUpdateError({required this.message});
+  MovieStatusUpdateError(this.errorType);
 }
 
 class MovieStatusUpdateSuccess extends MovieState {}

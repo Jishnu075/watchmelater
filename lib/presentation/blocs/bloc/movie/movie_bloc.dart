@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:watchmelater/core/errors/error_types.dart';
 import 'package:watchmelater/data/models/movie_model.dart';
 import 'package:watchmelater/data/repositories/movie_repository.dart';
 
@@ -15,7 +20,13 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
         await movieRepository.addMovieToList(movie: event.movie);
         emit(MovieAdded());
       } catch (e) {
-        emit(MovieAddedFailure('Failed to add movie: ${e.toString()}'));
+        if (e is SocketException) {
+          emit(MovieAddedFailure(ErrorType.network));
+        } else if (e is TimeoutException) {
+          emit(MovieAddedFailure(ErrorType.server));
+        } else {
+          emit(MovieAddedFailure(ErrorType.unknown));
+        }
       }
     });
 
@@ -25,7 +36,13 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
         final movies = await movieRepository.getMovies();
         emit(MoviesLoaded(movies));
       } catch (e) {
-        emit(MoviesLoadError('Failed to load movies: ${e.toString()}'));
+        if (e is SocketException) {
+          emit(MoviesLoadError(ErrorType.network));
+        } else if (e is TimeoutException) {
+          emit(MoviesLoadError(ErrorType.server));
+        } else {
+          MoviesLoadError(ErrorType.unknown);
+        }
       }
     });
 
@@ -36,8 +53,13 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
           await movieRepository.removeMovieFromList(movieId: event.id);
           emit(MovieRemoved());
         } catch (e) {
-          emit(MovieRemovalError(
-              message: 'Failed to remove the movie: ${e.toString()}'));
+          if (e is SocketException) {
+            emit(MovieRemovalError(ErrorType.network));
+          } else if (e is TimeoutException) {
+            emit(MovieRemovalError(ErrorType.server));
+          } else {
+            emit(MovieRemovalError(ErrorType.unknown));
+          }
         }
       },
     );
@@ -49,8 +71,13 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
             movieId: event.id, watched: event.watched);
         emit(MovieStatusUpdateSuccess());
       } catch (e) {
-        emit(MovieStatusUpdateError(
-            message: 'failed to update, try again later:( $e'));
+        if (e is SocketException) {
+          emit(MovieStatusUpdateError(ErrorType.network));
+        } else if (e is TimeoutException) {
+          emit(MovieStatusUpdateError(ErrorType.server));
+        } else {
+          emit(MovieStatusUpdateError(ErrorType.unknown));
+        }
       }
     });
 
