@@ -39,7 +39,7 @@ class LoginScreen extends StatelessWidget {
                     color: Colors.black,
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      opacity: 0.1,
+                      opacity: 0.3,
                       image: AssetImage('assets/login-poster.jpg'),
                     )),
               ),
@@ -75,10 +75,10 @@ class LoginScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 150),
-                          child: FilledButton(
+                          child: OutlinedButton(
                               // icon: Icon(Icons.g_mobiledata),
-                              style: FilledButton.styleFrom(
-                                  backgroundColor: Colors.white10),
+                              style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white),
                               onPressed: () {
                                 context
                                     .read<AuthBloc>()
