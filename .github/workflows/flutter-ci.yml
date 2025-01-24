@@ -1,11 +1,10 @@
 name: Flutter Release Build
 
 on:
-  pull_request:
+  push:
     branches:
       - master
-    types:
-      - closed
+
 
 permissions:
   contents: write
