@@ -1,11 +1,11 @@
 name: Flutter Release Build
 
 on:
-  push:
+  pull_request:
     branches:
-      - release
-    tags:
-      - 'v*'
+      - master
+    types:
+      - closed
 
 permissions:
   contents: write
